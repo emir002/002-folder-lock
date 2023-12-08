@@ -25,5 +25,6 @@ Paypal : net_hr@outlook.com
 Monero : 49D8Vbe2cpsiWxHhgjfExz2NECvdoaZhoJS33gaiUbPhY2PJZQuQfsbhR7pyGsxaEP4UkPhiWz6kCc9j7YzVs1psTMHxo4G
 Ethereum : 0x33234686d42eb8b2f96f75f061bc01a302515014
 Ethereum Classic : 0x33234686d42eb8b2f96f75f061bc01a302515014
-Avalanche AVAX : 0xEEcc1d4c922b66C174600455290ddfAA9f07c73F
+Avalanche AVAX : 0xEEcc1d4c922b66C174600455290ddfAA9f07c73F  
+
 
