@@ -11,7 +11,7 @@ There are four buttons on the main screen. The "Change folder" button is used to
 
 At the top on the left is the "Options" menu. It has the following functions: -Change password, -Help (this file), -Buy me a coffee and -About. The -Change password option opens the next window in which the user must enter the old password and confirm the new password twice. After clicking the OK button, the new password will be used to access the program
 
-##Speed
+##Speed  
 When unlocking or locking a folder, if there are a large number of files or these files take up a lot of space measured in gigabytes, it is normal for the program to become unresponsive until it finishes all encryption/decryption operations. This may take some time and depends on the size of the folder as well as the speed of your SSD/HDD disk and processor. It is recommended that the program is not interrupted until it is finished. Give him some time.
 
 ## More help
