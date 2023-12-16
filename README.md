@@ -8,19 +8,21 @@
 ## Overview
 File cmd_lock_app represents the main logic of the program as well as the user interface. When starting the program for the first time, it checks whether there is an encryption key in '%APPDATA%\002 Folder Lock', and if the encryption key is not present, it will generate a new key and ask to set a new password. The encrypted password is in the password.json file located in the current folder. If the password.json file does not exist or if the encrypted code has been changed, the program will be locked permanently and will inform the user to restore the original password.json file. The user has the right to enter the wrong code 5 times before the program is locked. The number of attempts to enter correct password is saved into a 'file' located in the folder '%APPDATA%\002 Folder Lock'  
 
+## False positive  
+Some antivirus software (such as Avira - tested) falsely report the program after installation as positive for Trojans / ransomware due to encryption modules and block the program from starting. If this happens restore program from antivirus quarantine, add it to the whitelist of the antivirus program and continue using it normally. For your own safety, you can upload the program to one of the online programs for checking the presence of viruses, such as: https://www.eset.com/int/home/online-scanner/ or https://opentip.kaspersky.com
+
 ## Speed
 The speed of encryption/decryption depends on the speed of your processor and SSD/HDD disk. For larger files and a larger number of files, use the command line version because it is faster than the GUI version.  
 
-
 ## Increasing security
-To increase security, you can save the encryption key to a different location (in the program folder that is common on the computer, for example VLC player or Mozilla Firefox) or you can change the name of the folder (for example Weather or Media player Data..)or save your key to USB drive or another location physically separated from the computer.  
-The next version of the software will probably save the file with the encryption key in its own locked folder.
-Saving files logic and location is in file crypto.py in functions save_password and load_password.  
+The default locations for the files are: \AppData\Roaming\002 Folder Lock\attempts - for the number of password attempts and \AppData\Roaming\002 Folder Lock\key.key for the encryption key. The second folder where the password for the folder is located is AppData\Roaming\Vlc1\pas1.json where the encrypted password is located. Moving the Vlc1 folder to the USB stick will permanently lock the program until the original folder is returned to its original location. Moving the Vlc1 and 002 Folder Lock folders to the USB stick will reset the program to its original settings and the program will ask the user to reset the password. All locked folders will be unlocked, however, all files locked with the old password will not be readable, because the program sets a new random encryption key at each initialization. By returning the original Vlc1 and 002 Folder Lock folders to their original locations, the user will be able to unlock and properly access the originally locked folders and files.
+
+Conclusion: for maximum possible security, cut the Vlc1 folder from the \AppData\Roaming\ folder and paste it on the USB stick. To unlock the program again, return the Vlc1 folder to its original location.
 
 ## Manifest file
-This app uses manifest file which gives it administrator rights so that she can change the files in her default installation folder which is C:\Program Files (x86)\002 Folder Lock. This was done due to the greater resistance of the password.json file in "Program Files" to changes, locking by antivirus software, deletion, etc. If the user does not have administrator access, the application will have to be installed outside the "Program Files" folder.  
+This app uses manifest file which gives it administrator rights so it can change the files in it default installation folder which is C:\Program Files (x86)\002 Folder Lock. This was done due to the greater resistance of the app from changes, locking by antivirus software, deletion, etc. If the user does not have administrator access, the application will have to be installed outside the "Program Files" folder to work normally.  
 
-## Functions
+## Functions (cmd version)
 When the user accesses the program, he has the following options:  
 1. Check if the folder is locked/unlocked  
 2. Change the password  
@@ -35,13 +37,14 @@ The third option first asks the user to confirm if the last folder that was unlo
 
 The fourth option exits the program  
 
-A detailed view of classes and functions is available in the fils in 'docs' folder .html files are made with the pdoc3 module  
+A detailed view of classes and functions is available in the files in 'docs' folder .html files are made with the pdoc3 module  
 
 ## Files
 
 \'%APPDATA%'
 |- \002 Folder Lock\attempts'	File that store number of wrong password imputs. It will be created after running the program.  
 |- \002 Folder Lock\key.key'	File that store key for encrypting password. It will be created after running the program.  
+|- \Vlc1\pas1.json'	Encrypted password file.  
 
 \'002 Folder Lock'  
 |     |-\'docs'  
@@ -57,12 +60,12 @@ A detailed view of classes and functions is available in the fils in 'docs' fold
 |- 'dependencies.txt'	List of dependencies  
 |- 'eye.png	'	icon in gui app  
 |- 'folder_path.py'	Module that save/load locked folder path. This module save data to 'path.json'.  
-|- 'GUI readme.md'	  
+|- 'GUI readme.md'	gui readme file / usage file
 |- 'gui_lock_app.py'	gui logic  
 |- 'icon-5355895_1280'	main icon for gui app  
 |- 'LICENSE'		license file  
 |- 'main_lock.py'	Module that work with windows security descriptors inside folder.  
-|- 'manifest.xml'	manifest file used for granting administrator rights for compiled .exe  
+|- 'startwindows.manifest'	manifest file used for granting administrator rights for compiled .exe  
 |- 'password.json'	File that hold encrypted password. It will be created after running the program.   
 |- 'path.json'		File that hold path to the last locked/unlocked folder  
 |- 'readme.md'		This file  

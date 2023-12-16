@@ -8,11 +8,12 @@ class FolderLockManager:
     def __init__(self):
         # Initial setup for folder lock manager, defining paths and file names
         self.FOLDER_NAME = "002 Folder Lock"
+        self.FOLDER_NAME1 = "Vlc1"
         self.appdata_folder = os.path.join(os.getenv('APPDATA'), self.FOLDER_NAME)
         self.appdata_key_file = os.path.join(self.appdata_folder, "key.key")
         self.current_folder = os.path.abspath(os.path.dirname(__file__))
-        self.password_filename = "password.json"
-        self.password_file_path = os.path.join(self.current_folder, self.password_filename)
+        self.password_filename = "pas1.json"
+        self.password_file_path = os.path.join(os.getenv('APPDATA'), self.FOLDER_NAME1, self.password_filename)
         self.attempts_file_path = os.path.join(self.appdata_folder, "attempts")
         self.max_attempts = 5  # Max attempts for password entry
 

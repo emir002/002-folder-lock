@@ -16,22 +16,4 @@ def write_path_file(data):
 def save_load_path():
     data = read_path_file()
     
-""""    if 'folder_path' in data:
-        print(data['folder_path'])
-        
-    else:
-        print("Please enter folder path:")
-        folder_path = input().strip()
-        data['folder_path'] = folder_path
-        write_path_file(data)
-        
-        
-        
-                
-        elif choice == '3':
-            print("Quitting...")
-            break
 
-if __name__ == "__main__":
-    save_load_path()
-"""

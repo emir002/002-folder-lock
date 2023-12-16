@@ -1,0 +1,6 @@
+__pycache__/
+build/
+dist/
+docs/
+startwindows.manifest
+startwindows.spec

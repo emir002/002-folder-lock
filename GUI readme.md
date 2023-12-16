@@ -11,11 +11,19 @@ There are four buttons on the main screen. The "Change folder" button is used to
 
 At the top on the left is the "Options" menu. It has the following functions: -Change password, -Help (this file), -Buy me a coffee and -About. The -Change password option opens the next window in which the user must enter the old password and confirm the new password twice. After clicking the OK button, the new password will be used to access the program
 
+## False positive  
+Some antivirus software (such as Avira - tested) falsely report the program after installation as positive for Trojans / ransomware due to encryption modules and block the program from starting. If this happens restore program from antivirus quarantine, add it to the whitelist of the antivirus program and continue using it normally. For your own safety, you can upload the program to one of the online programs for checking the presence of viruses, such as: https://www.eset.com/int/home/online-scanner/ or https://opentip.kaspersky.com
+
 ##Speed  
 When unlocking or locking a folder, if there are a large number of files or these files take up a lot of space measured in gigabytes, it is normal for the program to become unresponsive until it finishes all encryption/decryption operations. This may take some time and depends on the size of the folder as well as the speed of your SSD/HDD disk and processor. It is recommended that the program is not interrupted until it is finished. Give it some time.
 
+## Increasing security
+The default locations for the files are: \AppData\Roaming\002 Folder Lock\attempts - for the number of password attempts and \AppData\Roaming\002 Folder Lock\key.key for the encryption key. The second folder where the password for the folder is located is AppData\Roaming\Vlc1\pas1.json where the encrypted password is located. Moving the Vlc1 folder to the USB stick will permanently lock the program until the original folder is returned to its original location. Moving the Vlc1 and 002 Folder Lock folders to the USB stick will reset the program to its original settings and the program will ask the user to reset the password. All locked folders will be unlocked, however, all files locked with the old password will not be readable, because the program sets a new random encryption key at each initialization. By returning the original Vlc1 and 002 Folder Lock folders to their original locations, the user will be able to unlock and properly access the originally locked folders and files.
+
+Conclusion: for maximum possible security, cut the Vlc1 folder from the \AppData\Roaming\ folder and paste it on the USB stick. To unlock the program again, return the Vlc1 folder to its original location.
+
 ## More help
-You can find more help in file README.md in program directory in GitHub:
+You can find more help in file README.md in program directory in GitHub and app folder:
 https://github.com/emir002/002-folder-lock
 
 ## Buy me a coffee

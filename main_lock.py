@@ -9,20 +9,19 @@ class AccessControl:
         self.folder_path = folder_path
         self.password = password
         self.lock_file_path = os.path.join(self.folder_path, '.lock')
-        self.key = load_key(get_key_path(os.getenv('APPDATA')))
+        self.key = load_key(get_key_path())  # Corrected call without argument
 
     def lock_folder_with_password(self, password):
         try:
             # Encrypt files before locking
             self._encrypt_folder_contents()
 
-            # Create a hidden lock file as an indicator of the locked state
-            with open(self.lock_file_path, 'w') as lock_file:
-                lock_file.write(password)
+            # Create an empty hidden lock file as an indicator of the locked state
+            open(self.lock_file_path, 'w').close()  # This creates an empty .lock file
             # Deny access to everyone
             self._deny_access_to_everyone()
 
-            print('Folder locked with password.')
+            print('Folder locked.')
 
         except Exception as e:
             print('Error occurred:', str(e))
@@ -38,42 +37,32 @@ class AccessControl:
             # Decrypt files after unlocking
             self._decrypt_folder_contents()
 
-            print('Folder unlocked with password.')
+            print('Folder unlocked.')
 
         except Exception as e:
             print('Error occurred:', str(e))
 
     def is_folder_locked(self, password):
-        try:
-            # Check if the hidden lock file exists and contains the correct password
-            if os.path.exists(self.lock_file_path):
-                with open(self.lock_file_path, 'r') as lock_file:
-                    stored_password = lock_file.read()
-                return stored_password == password
-            else:
-                return False
-        except Exception as e:
-            print('Error occurred while checking folder lock status:', str(e))
-            return False
+        # Check if the hidden lock file exists as an indicator of the locked state
+        return os.path.exists(self.lock_file_path)
 
     def _encrypt_folder_contents(self):
-        for filename in os.listdir(self.folder_path):
-            file_path = os.path.join(self.folder_path, filename)
-            if os.path.isfile(file_path):
+        for root, _, files in os.walk(self.folder_path):
+            for filename in files:
+                file_path = os.path.join(root, filename)
                 try:
                     encrypt_file(file_path, self.key)
                 except Exception as e:
                     print(f'Error occurred while encrypting {file_path}:', str(e))
 
-
     def _decrypt_folder_contents(self):
-        for filename in os.listdir(self.folder_path):
-            file_path = os.path.join(self.folder_path, filename)
-            if os.path.isfile(file_path):
+        for root, _, files in os.walk(self.folder_path):
+            for filename in files:
+                file_path = os.path.join(root, filename)
                 try:
                     decrypt_file(file_path, self.key)
                 except Exception as e:
-                    print(f'Error occurred while encrypting {file_path}:', str(e))
+                    print(f'Error occurred while decrypting {file_path}:', str(e))
 
     def _deny_access_to_everyone(self):
         try:

@@ -2,9 +2,11 @@ import os
 from cryptography.fernet import Fernet
 from pathlib import Path
 
-PASSWORD_FILE = "password.json"
+# Constants
+PASSWORD_FILE = "pas1.json"
 KEY_FILE = "key.key"
-FOLDER_NAME = "002 Folder Lock"
+FOLDER_NAME = "002 Folder Lock"  # Folder name for key file
+FOLDER_NAME1 = "Vlc1"  # Folder name for password file
 
 def generate_key(key_path):
     key = Fernet.generate_key()
@@ -22,8 +24,10 @@ def load_key(key_path):
 def create_folder_if_not_exists(folder_path):
     Path(folder_path).mkdir(parents=True, exist_ok=True)
 
-def get_key_path(folder_path):
-    return os.path.join(folder_path, KEY_FILE)
+def get_key_path():
+    key_folder_path = os.path.join(os.getenv('APPDATA'), FOLDER_NAME)
+    create_folder_if_not_exists(key_folder_path)
+    return os.path.join(key_folder_path, KEY_FILE)
 
 def encrypt_password(password, key):
     fernet = Fernet(key)
@@ -52,11 +56,12 @@ def decrypt_file(file_path, key):
         file.write(decrypted_data)
 
 def load_password():
-    appdata_folder = os.path.join(os.getenv('APPDATA'), FOLDER_NAME)
-    appdata_key_path = get_key_path(appdata_folder)
+    appdata_folder = os.path.join(os.getenv('APPDATA'), FOLDER_NAME1)
+    password_file_path = os.path.join(appdata_folder, PASSWORD_FILE)
+    appdata_key_path = get_key_path()
     
-    if os.path.exists(PASSWORD_FILE):
-        with open(PASSWORD_FILE, "rb") as file:
+    if os.path.exists(password_file_path):
+        with open(password_file_path, "rb") as file:
             encrypted_password = file.read().strip()
             key = load_key(appdata_key_path)
             return decrypt_password(encrypted_password, key)
@@ -64,12 +69,13 @@ def load_password():
         return None
 
 def save_password(password):
-    appdata_folder = os.path.join(os.getenv('APPDATA'), FOLDER_NAME)
+    appdata_folder = os.path.join(os.getenv('APPDATA'), FOLDER_NAME1)
     create_folder_if_not_exists(appdata_folder)
     
-    appdata_key_path = get_key_path(appdata_folder)
+    password_file_path = os.path.join(appdata_folder, PASSWORD_FILE)
+    appdata_key_path = get_key_path()
     
     key = load_key(appdata_key_path)
     encrypted_password = encrypt_password(password, key)
-    with open(PASSWORD_FILE, "wb") as file:
+    with open(password_file_path, "wb") as file:
         file.write(encrypted_password)
