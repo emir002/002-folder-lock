@@ -30,6 +30,9 @@
                     <a class="variable" href="#KEY_FILE">KEY_FILE</a>
             </li>
             <li>
+                    <a class="variable" href="#KEY_FILE_1">KEY_FILE_1</a>
+            </li>
+            <li>
                     <a class="variable" href="#FOLDER_NAME">FOLDER_NAME</a>
             </li>
             <li>
@@ -48,6 +51,9 @@
                     <a class="function" href="#get_key_path">get_key_path</a>
             </li>
             <li>
+                    <a class="function" href="#get_key1_path">get_key1_path</a>
+            </li>
+            <li>
                     <a class="function" href="#encrypt_password">encrypt_password</a>
             </li>
             <li>
@@ -64,6 +70,12 @@
             </li>
             <li>
                     <a class="function" href="#save_password">save_password</a>
+            </li>
+            <li>
+                    <a class="function" href="#encrypt_dax_file">encrypt_dax_file</a>
+            </li>
+            <li>
+                    <a class="function" href="#decrypt_dax_file">decrypt_dax_file</a>
             </li>
     </ul>
 
@@ -86,87 +98,151 @@ crypto    </h1>
 
                         <label class="view-source-button" for="mod-crypto-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="kn">import</span> <span class="nn">os</span>
-</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="kn">from</span> <span class="nn">cryptography.fernet</span> <span class="kn">import</span> <span class="n">Fernet</span>
-</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="c1"># Constants</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="n">PASSWORD_FILE</span> <span class="o">=</span> <span class="s2">&quot;pas1.json&quot;</span>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="n">KEY_FILE</span> <span class="o">=</span> <span class="s2">&quot;key.key&quot;</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="n">FOLDER_NAME</span> <span class="o">=</span> <span class="s2">&quot;002 Folder Lock&quot;</span>  <span class="c1"># Folder name for key file</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="n">FOLDER_NAME1</span> <span class="o">=</span> <span class="s2">&quot;Vlc1&quot;</span>  <span class="c1"># Folder name for password file</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="k">def</span> <span class="nf">generate_key</span><span class="p">(</span><span class="n">key_path</span><span class="p">):</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>    <span class="n">key</span> <span class="o">=</span> <span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">key_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">key_file</span><span class="p">:</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>        <span class="n">key_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="k">def</span> <span class="nf">load_key</span><span class="p">(</span><span class="n">key_path</span><span class="p">):</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">key_path</span><span class="p">):</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">key_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">key_file</span><span class="p">:</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>            <span class="k">return</span> <span class="n">key_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>    <span class="k">else</span><span class="p">:</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>        <span class="n">generate_key</span><span class="p">(</span><span class="n">key_path</span><span class="p">)</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>        <span class="k">return</span> <span class="n">load_key</span><span class="p">(</span><span class="n">key_path</span><span class="p">)</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="k">def</span> <span class="nf">create_folder_if_not_exists</span><span class="p">(</span><span class="n">folder_path</span><span class="p">):</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>    <span class="n">Path</span><span class="p">(</span><span class="n">folder_path</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a><span class="k">def</span> <span class="nf">get_key_path</span><span class="p">():</span>
-</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>    <span class="n">key_folder_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;APPDATA&#39;</span><span class="p">),</span> <span class="n">FOLDER_NAME</span><span class="p">)</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>    <span class="n">create_folder_if_not_exists</span><span class="p">(</span><span class="n">key_folder_path</span><span class="p">)</span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">key_folder_path</span><span class="p">,</span> <span class="n">KEY_FILE</span><span class="p">)</span>
-</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>
-</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a><span class="k">def</span> <span class="nf">encrypt_password</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>    <span class="n">fernet</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>    <span class="n">encrypted_password</span> <span class="o">=</span> <span class="n">fernet</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">password</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>    <span class="k">return</span> <span class="n">encrypted_password</span>
-</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>
-</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a><span class="k">def</span> <span class="nf">decrypt_password</span><span class="p">(</span><span class="n">encrypted_password</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>    <span class="n">fernet</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>    <span class="n">decrypted_password</span> <span class="o">=</span> <span class="n">fernet</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">encrypted_password</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
-</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>    <span class="k">return</span> <span class="n">decrypted_password</span>
-</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a>
-</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a><span class="k">def</span> <span class="nf">encrypt_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a>    <span class="n">fernet</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a>        <span class="n">file_data</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a>    <span class="n">encrypted_data</span> <span class="o">=</span> <span class="n">fernet</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">file_data</span><span class="p">)</span>
-</span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-</span><span id="L-48"><a href="#L-48"><span class="linenos">48</span></a>        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">encrypted_data</span><span class="p">)</span>
-</span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a>
-</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a><span class="k">def</span> <span class="nf">decrypt_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-</span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a>    <span class="n">fernet</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-</span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a>        <span class="n">encrypted_data</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span><span id="L-54"><a href="#L-54"><span class="linenos">54</span></a>    <span class="n">decrypted_data</span> <span class="o">=</span> <span class="n">fernet</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">encrypted_data</span><span class="p">)</span>
-</span><span id="L-55"><a href="#L-55"><span class="linenos">55</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-</span><span id="L-56"><a href="#L-56"><span class="linenos">56</span></a>        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">decrypted_data</span><span class="p">)</span>
-</span><span id="L-57"><a href="#L-57"><span class="linenos">57</span></a>
-</span><span id="L-58"><a href="#L-58"><span class="linenos">58</span></a><span class="k">def</span> <span class="nf">load_password</span><span class="p">():</span>
-</span><span id="L-59"><a href="#L-59"><span class="linenos">59</span></a>    <span class="n">appdata_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;APPDATA&#39;</span><span class="p">),</span> <span class="n">FOLDER_NAME1</span><span class="p">)</span>
-</span><span id="L-60"><a href="#L-60"><span class="linenos">60</span></a>    <span class="n">password_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">appdata_folder</span><span class="p">,</span> <span class="n">PASSWORD_FILE</span><span class="p">)</span>
-</span><span id="L-61"><a href="#L-61"><span class="linenos">61</span></a>    <span class="n">appdata_key_path</span> <span class="o">=</span> <span class="n">get_key_path</span><span class="p">()</span>
-</span><span id="L-62"><a href="#L-62"><span class="linenos">62</span></a>    
-</span><span id="L-63"><a href="#L-63"><span class="linenos">63</span></a>    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">password_file_path</span><span class="p">):</span>
-</span><span id="L-64"><a href="#L-64"><span class="linenos">64</span></a>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">password_file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-</span><span id="L-65"><a href="#L-65"><span class="linenos">65</span></a>            <span class="n">encrypted_password</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-</span><span id="L-66"><a href="#L-66"><span class="linenos">66</span></a>            <span class="n">key</span> <span class="o">=</span> <span class="n">load_key</span><span class="p">(</span><span class="n">appdata_key_path</span><span class="p">)</span>
-</span><span id="L-67"><a href="#L-67"><span class="linenos">67</span></a>            <span class="k">return</span> <span class="n">decrypt_password</span><span class="p">(</span><span class="n">encrypted_password</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-</span><span id="L-68"><a href="#L-68"><span class="linenos">68</span></a>    <span class="k">else</span><span class="p">:</span>
-</span><span id="L-69"><a href="#L-69"><span class="linenos">69</span></a>        <span class="k">return</span> <span class="kc">None</span>
-</span><span id="L-70"><a href="#L-70"><span class="linenos">70</span></a>
-</span><span id="L-71"><a href="#L-71"><span class="linenos">71</span></a><span class="k">def</span> <span class="nf">save_password</span><span class="p">(</span><span class="n">password</span><span class="p">):</span>
-</span><span id="L-72"><a href="#L-72"><span class="linenos">72</span></a>    <span class="n">appdata_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;APPDATA&#39;</span><span class="p">),</span> <span class="n">FOLDER_NAME1</span><span class="p">)</span>
-</span><span id="L-73"><a href="#L-73"><span class="linenos">73</span></a>    <span class="n">create_folder_if_not_exists</span><span class="p">(</span><span class="n">appdata_folder</span><span class="p">)</span>
-</span><span id="L-74"><a href="#L-74"><span class="linenos">74</span></a>    
-</span><span id="L-75"><a href="#L-75"><span class="linenos">75</span></a>    <span class="n">password_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">appdata_folder</span><span class="p">,</span> <span class="n">PASSWORD_FILE</span><span class="p">)</span>
-</span><span id="L-76"><a href="#L-76"><span class="linenos">76</span></a>    <span class="n">appdata_key_path</span> <span class="o">=</span> <span class="n">get_key_path</span><span class="p">()</span>
-</span><span id="L-77"><a href="#L-77"><span class="linenos">77</span></a>    
-</span><span id="L-78"><a href="#L-78"><span class="linenos">78</span></a>    <span class="n">key</span> <span class="o">=</span> <span class="n">load_key</span><span class="p">(</span><span class="n">appdata_key_path</span><span class="p">)</span>
-</span><span id="L-79"><a href="#L-79"><span class="linenos">79</span></a>    <span class="n">encrypted_password</span> <span class="o">=</span> <span class="n">encrypt_password</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-</span><span id="L-80"><a href="#L-80"><span class="linenos">80</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">password_file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-</span><span id="L-81"><a href="#L-81"><span class="linenos">81</span></a>        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">encrypted_password</span><span class="p">)</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">  1</span></a><span class="kn">import</span> <span class="nn">os</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos">  2</span></a><span class="kn">from</span> <span class="nn">cryptography.fernet</span> <span class="kn">import</span> <span class="n">Fernet</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos">  3</span></a><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos">  4</span></a>
+</span><span id="L-5"><a href="#L-5"><span class="linenos">  5</span></a><span class="c1"># Constants for file paths and folder names</span>
+</span><span id="L-6"><a href="#L-6"><span class="linenos">  6</span></a><span class="n">PASSWORD_FILE</span> <span class="o">=</span> <span class="s2">&quot;pas1.json&quot;</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos">  7</span></a><span class="n">KEY_FILE</span> <span class="o">=</span> <span class="s2">&quot;key.key&quot;</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos">  8</span></a><span class="n">KEY_FILE_1</span> <span class="o">=</span> <span class="s2">&quot;key1.key&quot;</span>  <span class="c1"># New key file name</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a><span class="n">FOLDER_NAME</span> <span class="o">=</span> <span class="s2">&quot;002 Folder Lock&quot;</span>  <span class="c1"># Folder name for key file</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a><span class="n">FOLDER_NAME1</span> <span class="o">=</span> <span class="s2">&quot;Vlc1&quot;</span>  <span class="c1"># Folder name for password file</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a>
+</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a><span class="k">def</span> <span class="nf">generate_key</span><span class="p">(</span><span class="n">key_path</span><span class="p">):</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a><span class="sd">    Generates a new encryption key and saves it to the specified path.</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a>    <span class="n">key</span> <span class="o">=</span> <span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">key_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">key_file</span><span class="p">:</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a>        <span class="n">key_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a>
+</span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a><span class="k">def</span> <span class="nf">load_key</span><span class="p">(</span><span class="n">key_path</span><span class="p">):</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a><span class="sd">    Loads an encryption key from the specified path. If the key file does not</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a><span class="sd">    exist, it generates a new key file at that path.</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a>    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">key_path</span><span class="p">):</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">key_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">key_file</span><span class="p">:</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos"> 27</span></a>            <span class="k">return</span> <span class="n">key_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos"> 28</span></a>    <span class="k">else</span><span class="p">:</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos"> 29</span></a>        <span class="n">generate_key</span><span class="p">(</span><span class="n">key_path</span><span class="p">)</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos"> 30</span></a>        <span class="k">return</span> <span class="n">load_key</span><span class="p">(</span><span class="n">key_path</span><span class="p">)</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos"> 31</span></a>
+</span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a><span class="k">def</span> <span class="nf">create_folder_if_not_exists</span><span class="p">(</span><span class="n">folder_path</span><span class="p">):</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a><span class="sd">    Creates a folder at the specified path if it does not already exist.</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a>    <span class="n">Path</span><span class="p">(</span><span class="n">folder_path</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a>
+</span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a><span class="k">def</span> <span class="nf">get_key_path</span><span class="p">():</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a><span class="sd">    Returns the file path for the original key file.</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a>    <span class="n">key_folder_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;APPDATA&#39;</span><span class="p">),</span> <span class="n">FOLDER_NAME</span><span class="p">)</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a>    <span class="n">create_folder_if_not_exists</span><span class="p">(</span><span class="n">key_folder_path</span><span class="p">)</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a>    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">key_folder_path</span><span class="p">,</span> <span class="n">KEY_FILE</span><span class="p">)</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a>
+</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a><span class="k">def</span> <span class="nf">get_key1_path</span><span class="p">():</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a><span class="sd">    Returns the file path for the additional key file &#39;key1.key&#39;.</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a>    <span class="n">key_folder_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;APPDATA&#39;</span><span class="p">),</span> <span class="n">FOLDER_NAME</span><span class="p">)</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a>    <span class="n">create_folder_if_not_exists</span><span class="p">(</span><span class="n">key_folder_path</span><span class="p">)</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a>    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">key_folder_path</span><span class="p">,</span> <span class="n">KEY_FILE_1</span><span class="p">)</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a>
+</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a><span class="c1"># Encryption and decryption functions</span>
+</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a>
+</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a><span class="k">def</span> <span class="nf">encrypt_password</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a><span class="sd">    Encrypts the provided password using the provided key.</span>
+</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a>    <span class="n">fernet</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a>    <span class="n">encrypted_password</span> <span class="o">=</span> <span class="n">fernet</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">password</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+</span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a>    <span class="k">return</span> <span class="n">encrypted_password</span>
+</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a>
+</span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a><span class="k">def</span> <span class="nf">decrypt_password</span><span class="p">(</span><span class="n">encrypted_password</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a><span class="sd">    Decrypts the provided encrypted password using the provided key.</span>
+</span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a>    <span class="n">fernet</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a>    <span class="n">decrypted_password</span> <span class="o">=</span> <span class="n">fernet</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">encrypted_password</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>    <span class="k">return</span> <span class="n">decrypted_password</span>
+</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a>
+</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a><span class="k">def</span> <span class="nf">encrypt_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a><span class="sd">    Encrypts the file at the given file path using the provided key.</span>
+</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a>    <span class="n">fernet</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a>        <span class="n">file_data</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a>    <span class="n">encrypted_data</span> <span class="o">=</span> <span class="n">fernet</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">file_data</span><span class="p">)</span>
+</span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a>        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">encrypted_data</span><span class="p">)</span>
+</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>
+</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a><span class="k">def</span> <span class="nf">decrypt_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+</span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a><span class="sd">    Decrypts the file at the given file path using the provided key.</span>
+</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a>    <span class="n">fernet</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+</span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a>        <span class="n">encrypted_data</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a>    <span class="n">decrypted_data</span> <span class="o">=</span> <span class="n">fernet</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">encrypted_data</span><span class="p">)</span>
+</span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+</span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a>        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">decrypted_data</span><span class="p">)</span>
+</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a>
+</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a><span class="c1"># Password handling functions</span>
+</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>
+</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a><span class="k">def</span> <span class="nf">load_password</span><span class="p">():</span>
+</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a><span class="sd">    Loads and decrypts the password from the password file.</span>
+</span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>    <span class="n">appdata_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;APPDATA&#39;</span><span class="p">),</span> <span class="n">FOLDER_NAME1</span><span class="p">)</span>
+</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a>    <span class="n">password_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">appdata_folder</span><span class="p">,</span> <span class="n">PASSWORD_FILE</span><span class="p">)</span>
+</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a>    <span class="n">appdata_key_path</span> <span class="o">=</span> <span class="n">get_key_path</span><span class="p">()</span>
+</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a>    
+</span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a>    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">password_file_path</span><span class="p">):</span>
+</span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">password_file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+</span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a>            <span class="n">encrypted_password</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a>            <span class="n">key</span> <span class="o">=</span> <span class="n">load_key</span><span class="p">(</span><span class="n">appdata_key_path</span><span class="p">)</span>
+</span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a>            <span class="k">return</span> <span class="n">decrypt_password</span><span class="p">(</span><span class="n">encrypted_password</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+</span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a>    <span class="k">else</span><span class="p">:</span>
+</span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a>        <span class="k">return</span> <span class="kc">None</span>
+</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a>
+</span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a><span class="k">def</span> <span class="nf">save_password</span><span class="p">(</span><span class="n">password</span><span class="p">):</span>
+</span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a><span class="sd">    Encrypts and saves the password to the password file.</span>
+</span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a>    <span class="n">appdata_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;APPDATA&#39;</span><span class="p">),</span> <span class="n">FOLDER_NAME1</span><span class="p">)</span>
+</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a>    <span class="n">create_folder_if_not_exists</span><span class="p">(</span><span class="n">appdata_folder</span><span class="p">)</span>
+</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a>    
+</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a>    <span class="n">password_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">appdata_folder</span><span class="p">,</span> <span class="n">PASSWORD_FILE</span><span class="p">)</span>
+</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a>    <span class="n">appdata_key_path</span> <span class="o">=</span> <span class="n">get_key_path</span><span class="p">()</span>
+</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a>    
+</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a>    <span class="n">key</span> <span class="o">=</span> <span class="n">load_key</span><span class="p">(</span><span class="n">appdata_key_path</span><span class="p">)</span>
+</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a>    <span class="n">encrypted_password</span> <span class="o">=</span> <span class="n">encrypt_password</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">password_file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+</span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a>        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">encrypted_password</span><span class="p">)</span>
+</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a>
+</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a><span class="c1"># Modified functions to use key1.key</span>
+</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a>
+</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a><span class="k">def</span> <span class="nf">encrypt_dax_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a><span class="sd">    Encrypts the specified file using &#39;key1.key&#39;. If the key is not provided,</span>
+</span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a><span class="sd">    it loads the key from &#39;key1.key&#39;.</span>
+</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a>    <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a>        <span class="n">key</span> <span class="o">=</span> <span class="n">load_key</span><span class="p">(</span><span class="n">get_key1_path</span><span class="p">())</span>
+</span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a>    <span class="n">encrypt_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>
+</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a><span class="k">def</span> <span class="nf">decrypt_dax_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a><span class="sd">    Decrypts the specified file using &#39;key1.key&#39;. If the key is not provided,</span>
+</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a><span class="sd">    it loads the key from &#39;key1.key&#39;.</span>
+</span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a>    <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a>        <span class="n">key</span> <span class="o">=</span> <span class="n">load_key</span><span class="p">(</span><span class="n">get_key1_path</span><span class="p">())</span>
+</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a>    <span class="n">decrypt_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -191,6 +267,18 @@ crypto    </h1>
         
     </div>
     <a class="headerlink" href="#KEY_FILE"></a>
+    
+    
+
+                </section>
+                <section id="KEY_FILE_1">
+                    <div class="attr variable">
+            <span class="name">KEY_FILE_1</span>        =
+<span class="default_value">&#39;key1.key&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#KEY_FILE_1"></a>
     
     
 
@@ -230,14 +318,19 @@ crypto    </h1>
 
     </div>
     <a class="headerlink" href="#generate_key"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="generate_key-12"><a href="#generate_key-12"><span class="linenos">12</span></a><span class="k">def</span> <span class="nf">generate_key</span><span class="p">(</span><span class="n">key_path</span><span class="p">):</span>
-</span><span id="generate_key-13"><a href="#generate_key-13"><span class="linenos">13</span></a>    <span class="n">key</span> <span class="o">=</span> <span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span>
-</span><span id="generate_key-14"><a href="#generate_key-14"><span class="linenos">14</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">key_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">key_file</span><span class="p">:</span>
-</span><span id="generate_key-15"><a href="#generate_key-15"><span class="linenos">15</span></a>        <span class="n">key_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="generate_key-13"><a href="#generate_key-13"><span class="linenos">13</span></a><span class="k">def</span> <span class="nf">generate_key</span><span class="p">(</span><span class="n">key_path</span><span class="p">):</span>
+</span><span id="generate_key-14"><a href="#generate_key-14"><span class="linenos">14</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="generate_key-15"><a href="#generate_key-15"><span class="linenos">15</span></a><span class="sd">    Generates a new encryption key and saves it to the specified path.</span>
+</span><span id="generate_key-16"><a href="#generate_key-16"><span class="linenos">16</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="generate_key-17"><a href="#generate_key-17"><span class="linenos">17</span></a>    <span class="n">key</span> <span class="o">=</span> <span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span>
+</span><span id="generate_key-18"><a href="#generate_key-18"><span class="linenos">18</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">key_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">key_file</span><span class="p">:</span>
+</span><span id="generate_key-19"><a href="#generate_key-19"><span class="linenos">19</span></a>        <span class="n">key_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Generates a new encryption key and saves it to the specified path.</p>
+</div>
+
 
                 </section>
                 <section id="load_key">
@@ -251,17 +344,24 @@ crypto    </h1>
 
     </div>
     <a class="headerlink" href="#load_key"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="load_key-17"><a href="#load_key-17"><span class="linenos">17</span></a><span class="k">def</span> <span class="nf">load_key</span><span class="p">(</span><span class="n">key_path</span><span class="p">):</span>
-</span><span id="load_key-18"><a href="#load_key-18"><span class="linenos">18</span></a>    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">key_path</span><span class="p">):</span>
-</span><span id="load_key-19"><a href="#load_key-19"><span class="linenos">19</span></a>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">key_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">key_file</span><span class="p">:</span>
-</span><span id="load_key-20"><a href="#load_key-20"><span class="linenos">20</span></a>            <span class="k">return</span> <span class="n">key_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span><span id="load_key-21"><a href="#load_key-21"><span class="linenos">21</span></a>    <span class="k">else</span><span class="p">:</span>
-</span><span id="load_key-22"><a href="#load_key-22"><span class="linenos">22</span></a>        <span class="n">generate_key</span><span class="p">(</span><span class="n">key_path</span><span class="p">)</span>
-</span><span id="load_key-23"><a href="#load_key-23"><span class="linenos">23</span></a>        <span class="k">return</span> <span class="n">load_key</span><span class="p">(</span><span class="n">key_path</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="load_key-21"><a href="#load_key-21"><span class="linenos">21</span></a><span class="k">def</span> <span class="nf">load_key</span><span class="p">(</span><span class="n">key_path</span><span class="p">):</span>
+</span><span id="load_key-22"><a href="#load_key-22"><span class="linenos">22</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="load_key-23"><a href="#load_key-23"><span class="linenos">23</span></a><span class="sd">    Loads an encryption key from the specified path. If the key file does not</span>
+</span><span id="load_key-24"><a href="#load_key-24"><span class="linenos">24</span></a><span class="sd">    exist, it generates a new key file at that path.</span>
+</span><span id="load_key-25"><a href="#load_key-25"><span class="linenos">25</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="load_key-26"><a href="#load_key-26"><span class="linenos">26</span></a>    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">key_path</span><span class="p">):</span>
+</span><span id="load_key-27"><a href="#load_key-27"><span class="linenos">27</span></a>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">key_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">key_file</span><span class="p">:</span>
+</span><span id="load_key-28"><a href="#load_key-28"><span class="linenos">28</span></a>            <span class="k">return</span> <span class="n">key_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span id="load_key-29"><a href="#load_key-29"><span class="linenos">29</span></a>    <span class="k">else</span><span class="p">:</span>
+</span><span id="load_key-30"><a href="#load_key-30"><span class="linenos">30</span></a>        <span class="n">generate_key</span><span class="p">(</span><span class="n">key_path</span><span class="p">)</span>
+</span><span id="load_key-31"><a href="#load_key-31"><span class="linenos">31</span></a>        <span class="k">return</span> <span class="n">load_key</span><span class="p">(</span><span class="n">key_path</span><span class="p">)</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Loads an encryption key from the specified path. If the key file does not
+exist, it generates a new key file at that path.</p>
+</div>
+
 
                 </section>
                 <section id="create_folder_if_not_exists">
@@ -275,12 +375,17 @@ crypto    </h1>
 
     </div>
     <a class="headerlink" href="#create_folder_if_not_exists"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="create_folder_if_not_exists-25"><a href="#create_folder_if_not_exists-25"><span class="linenos">25</span></a><span class="k">def</span> <span class="nf">create_folder_if_not_exists</span><span class="p">(</span><span class="n">folder_path</span><span class="p">):</span>
-</span><span id="create_folder_if_not_exists-26"><a href="#create_folder_if_not_exists-26"><span class="linenos">26</span></a>    <span class="n">Path</span><span class="p">(</span><span class="n">folder_path</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="create_folder_if_not_exists-33"><a href="#create_folder_if_not_exists-33"><span class="linenos">33</span></a><span class="k">def</span> <span class="nf">create_folder_if_not_exists</span><span class="p">(</span><span class="n">folder_path</span><span class="p">):</span>
+</span><span id="create_folder_if_not_exists-34"><a href="#create_folder_if_not_exists-34"><span class="linenos">34</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="create_folder_if_not_exists-35"><a href="#create_folder_if_not_exists-35"><span class="linenos">35</span></a><span class="sd">    Creates a folder at the specified path if it does not already exist.</span>
+</span><span id="create_folder_if_not_exists-36"><a href="#create_folder_if_not_exists-36"><span class="linenos">36</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="create_folder_if_not_exists-37"><a href="#create_folder_if_not_exists-37"><span class="linenos">37</span></a>    <span class="n">Path</span><span class="p">(</span><span class="n">folder_path</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Creates a folder at the specified path if it does not already exist.</p>
+</div>
+
 
                 </section>
                 <section id="get_key_path">
@@ -294,14 +399,45 @@ crypto    </h1>
 
     </div>
     <a class="headerlink" href="#get_key_path"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="get_key_path-28"><a href="#get_key_path-28"><span class="linenos">28</span></a><span class="k">def</span> <span class="nf">get_key_path</span><span class="p">():</span>
-</span><span id="get_key_path-29"><a href="#get_key_path-29"><span class="linenos">29</span></a>    <span class="n">key_folder_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;APPDATA&#39;</span><span class="p">),</span> <span class="n">FOLDER_NAME</span><span class="p">)</span>
-</span><span id="get_key_path-30"><a href="#get_key_path-30"><span class="linenos">30</span></a>    <span class="n">create_folder_if_not_exists</span><span class="p">(</span><span class="n">key_folder_path</span><span class="p">)</span>
-</span><span id="get_key_path-31"><a href="#get_key_path-31"><span class="linenos">31</span></a>    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">key_folder_path</span><span class="p">,</span> <span class="n">KEY_FILE</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="get_key_path-39"><a href="#get_key_path-39"><span class="linenos">39</span></a><span class="k">def</span> <span class="nf">get_key_path</span><span class="p">():</span>
+</span><span id="get_key_path-40"><a href="#get_key_path-40"><span class="linenos">40</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="get_key_path-41"><a href="#get_key_path-41"><span class="linenos">41</span></a><span class="sd">    Returns the file path for the original key file.</span>
+</span><span id="get_key_path-42"><a href="#get_key_path-42"><span class="linenos">42</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="get_key_path-43"><a href="#get_key_path-43"><span class="linenos">43</span></a>    <span class="n">key_folder_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;APPDATA&#39;</span><span class="p">),</span> <span class="n">FOLDER_NAME</span><span class="p">)</span>
+</span><span id="get_key_path-44"><a href="#get_key_path-44"><span class="linenos">44</span></a>    <span class="n">create_folder_if_not_exists</span><span class="p">(</span><span class="n">key_folder_path</span><span class="p">)</span>
+</span><span id="get_key_path-45"><a href="#get_key_path-45"><span class="linenos">45</span></a>    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">key_folder_path</span><span class="p">,</span> <span class="n">KEY_FILE</span><span class="p">)</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Returns the file path for the original key file.</p>
+</div>
+
+
+                </section>
+                <section id="get_key1_path">
+                            <input id="get_key1_path-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">get_key1_path</span><span class="signature pdoc-code condensed">(<span class="return-annotation">):</span></span>
+
+                <label class="view-source-button" for="get_key1_path-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#get_key1_path"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="get_key1_path-47"><a href="#get_key1_path-47"><span class="linenos">47</span></a><span class="k">def</span> <span class="nf">get_key1_path</span><span class="p">():</span>
+</span><span id="get_key1_path-48"><a href="#get_key1_path-48"><span class="linenos">48</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="get_key1_path-49"><a href="#get_key1_path-49"><span class="linenos">49</span></a><span class="sd">    Returns the file path for the additional key file &#39;key1.key&#39;.</span>
+</span><span id="get_key1_path-50"><a href="#get_key1_path-50"><span class="linenos">50</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="get_key1_path-51"><a href="#get_key1_path-51"><span class="linenos">51</span></a>    <span class="n">key_folder_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;APPDATA&#39;</span><span class="p">),</span> <span class="n">FOLDER_NAME</span><span class="p">)</span>
+</span><span id="get_key1_path-52"><a href="#get_key1_path-52"><span class="linenos">52</span></a>    <span class="n">create_folder_if_not_exists</span><span class="p">(</span><span class="n">key_folder_path</span><span class="p">)</span>
+</span><span id="get_key1_path-53"><a href="#get_key1_path-53"><span class="linenos">53</span></a>    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">key_folder_path</span><span class="p">,</span> <span class="n">KEY_FILE_1</span><span class="p">)</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Returns the file path for the additional key file 'key1.key'.</p>
+</div>
+
 
                 </section>
                 <section id="encrypt_password">
@@ -315,14 +451,19 @@ crypto    </h1>
 
     </div>
     <a class="headerlink" href="#encrypt_password"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="encrypt_password-33"><a href="#encrypt_password-33"><span class="linenos">33</span></a><span class="k">def</span> <span class="nf">encrypt_password</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-</span><span id="encrypt_password-34"><a href="#encrypt_password-34"><span class="linenos">34</span></a>    <span class="n">fernet</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-</span><span id="encrypt_password-35"><a href="#encrypt_password-35"><span class="linenos">35</span></a>    <span class="n">encrypted_password</span> <span class="o">=</span> <span class="n">fernet</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">password</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
-</span><span id="encrypt_password-36"><a href="#encrypt_password-36"><span class="linenos">36</span></a>    <span class="k">return</span> <span class="n">encrypted_password</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="encrypt_password-57"><a href="#encrypt_password-57"><span class="linenos">57</span></a><span class="k">def</span> <span class="nf">encrypt_password</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+</span><span id="encrypt_password-58"><a href="#encrypt_password-58"><span class="linenos">58</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="encrypt_password-59"><a href="#encrypt_password-59"><span class="linenos">59</span></a><span class="sd">    Encrypts the provided password using the provided key.</span>
+</span><span id="encrypt_password-60"><a href="#encrypt_password-60"><span class="linenos">60</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="encrypt_password-61"><a href="#encrypt_password-61"><span class="linenos">61</span></a>    <span class="n">fernet</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span id="encrypt_password-62"><a href="#encrypt_password-62"><span class="linenos">62</span></a>    <span class="n">encrypted_password</span> <span class="o">=</span> <span class="n">fernet</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">password</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+</span><span id="encrypt_password-63"><a href="#encrypt_password-63"><span class="linenos">63</span></a>    <span class="k">return</span> <span class="n">encrypted_password</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Encrypts the provided password using the provided key.</p>
+</div>
+
 
                 </section>
                 <section id="decrypt_password">
@@ -336,14 +477,19 @@ crypto    </h1>
 
     </div>
     <a class="headerlink" href="#decrypt_password"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="decrypt_password-38"><a href="#decrypt_password-38"><span class="linenos">38</span></a><span class="k">def</span> <span class="nf">decrypt_password</span><span class="p">(</span><span class="n">encrypted_password</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-</span><span id="decrypt_password-39"><a href="#decrypt_password-39"><span class="linenos">39</span></a>    <span class="n">fernet</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-</span><span id="decrypt_password-40"><a href="#decrypt_password-40"><span class="linenos">40</span></a>    <span class="n">decrypted_password</span> <span class="o">=</span> <span class="n">fernet</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">encrypted_password</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
-</span><span id="decrypt_password-41"><a href="#decrypt_password-41"><span class="linenos">41</span></a>    <span class="k">return</span> <span class="n">decrypted_password</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="decrypt_password-65"><a href="#decrypt_password-65"><span class="linenos">65</span></a><span class="k">def</span> <span class="nf">decrypt_password</span><span class="p">(</span><span class="n">encrypted_password</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+</span><span id="decrypt_password-66"><a href="#decrypt_password-66"><span class="linenos">66</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="decrypt_password-67"><a href="#decrypt_password-67"><span class="linenos">67</span></a><span class="sd">    Decrypts the provided encrypted password using the provided key.</span>
+</span><span id="decrypt_password-68"><a href="#decrypt_password-68"><span class="linenos">68</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="decrypt_password-69"><a href="#decrypt_password-69"><span class="linenos">69</span></a>    <span class="n">fernet</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span id="decrypt_password-70"><a href="#decrypt_password-70"><span class="linenos">70</span></a>    <span class="n">decrypted_password</span> <span class="o">=</span> <span class="n">fernet</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">encrypted_password</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+</span><span id="decrypt_password-71"><a href="#decrypt_password-71"><span class="linenos">71</span></a>    <span class="k">return</span> <span class="n">decrypted_password</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Decrypts the provided encrypted password using the provided key.</p>
+</div>
+
 
                 </section>
                 <section id="encrypt_file">
@@ -357,17 +503,22 @@ crypto    </h1>
 
     </div>
     <a class="headerlink" href="#encrypt_file"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="encrypt_file-43"><a href="#encrypt_file-43"><span class="linenos">43</span></a><span class="k">def</span> <span class="nf">encrypt_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-</span><span id="encrypt_file-44"><a href="#encrypt_file-44"><span class="linenos">44</span></a>    <span class="n">fernet</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-</span><span id="encrypt_file-45"><a href="#encrypt_file-45"><span class="linenos">45</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-</span><span id="encrypt_file-46"><a href="#encrypt_file-46"><span class="linenos">46</span></a>        <span class="n">file_data</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span><span id="encrypt_file-47"><a href="#encrypt_file-47"><span class="linenos">47</span></a>    <span class="n">encrypted_data</span> <span class="o">=</span> <span class="n">fernet</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">file_data</span><span class="p">)</span>
-</span><span id="encrypt_file-48"><a href="#encrypt_file-48"><span class="linenos">48</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-</span><span id="encrypt_file-49"><a href="#encrypt_file-49"><span class="linenos">49</span></a>        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">encrypted_data</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="encrypt_file-73"><a href="#encrypt_file-73"><span class="linenos">73</span></a><span class="k">def</span> <span class="nf">encrypt_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+</span><span id="encrypt_file-74"><a href="#encrypt_file-74"><span class="linenos">74</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="encrypt_file-75"><a href="#encrypt_file-75"><span class="linenos">75</span></a><span class="sd">    Encrypts the file at the given file path using the provided key.</span>
+</span><span id="encrypt_file-76"><a href="#encrypt_file-76"><span class="linenos">76</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="encrypt_file-77"><a href="#encrypt_file-77"><span class="linenos">77</span></a>    <span class="n">fernet</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span id="encrypt_file-78"><a href="#encrypt_file-78"><span class="linenos">78</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+</span><span id="encrypt_file-79"><a href="#encrypt_file-79"><span class="linenos">79</span></a>        <span class="n">file_data</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span id="encrypt_file-80"><a href="#encrypt_file-80"><span class="linenos">80</span></a>    <span class="n">encrypted_data</span> <span class="o">=</span> <span class="n">fernet</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">file_data</span><span class="p">)</span>
+</span><span id="encrypt_file-81"><a href="#encrypt_file-81"><span class="linenos">81</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+</span><span id="encrypt_file-82"><a href="#encrypt_file-82"><span class="linenos">82</span></a>        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">encrypted_data</span><span class="p">)</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Encrypts the file at the given file path using the provided key.</p>
+</div>
+
 
                 </section>
                 <section id="decrypt_file">
@@ -381,17 +532,22 @@ crypto    </h1>
 
     </div>
     <a class="headerlink" href="#decrypt_file"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="decrypt_file-51"><a href="#decrypt_file-51"><span class="linenos">51</span></a><span class="k">def</span> <span class="nf">decrypt_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-</span><span id="decrypt_file-52"><a href="#decrypt_file-52"><span class="linenos">52</span></a>    <span class="n">fernet</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-</span><span id="decrypt_file-53"><a href="#decrypt_file-53"><span class="linenos">53</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-</span><span id="decrypt_file-54"><a href="#decrypt_file-54"><span class="linenos">54</span></a>        <span class="n">encrypted_data</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span><span id="decrypt_file-55"><a href="#decrypt_file-55"><span class="linenos">55</span></a>    <span class="n">decrypted_data</span> <span class="o">=</span> <span class="n">fernet</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">encrypted_data</span><span class="p">)</span>
-</span><span id="decrypt_file-56"><a href="#decrypt_file-56"><span class="linenos">56</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-</span><span id="decrypt_file-57"><a href="#decrypt_file-57"><span class="linenos">57</span></a>        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">decrypted_data</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="decrypt_file-84"><a href="#decrypt_file-84"><span class="linenos">84</span></a><span class="k">def</span> <span class="nf">decrypt_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+</span><span id="decrypt_file-85"><a href="#decrypt_file-85"><span class="linenos">85</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="decrypt_file-86"><a href="#decrypt_file-86"><span class="linenos">86</span></a><span class="sd">    Decrypts the file at the given file path using the provided key.</span>
+</span><span id="decrypt_file-87"><a href="#decrypt_file-87"><span class="linenos">87</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="decrypt_file-88"><a href="#decrypt_file-88"><span class="linenos">88</span></a>    <span class="n">fernet</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span id="decrypt_file-89"><a href="#decrypt_file-89"><span class="linenos">89</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+</span><span id="decrypt_file-90"><a href="#decrypt_file-90"><span class="linenos">90</span></a>        <span class="n">encrypted_data</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span id="decrypt_file-91"><a href="#decrypt_file-91"><span class="linenos">91</span></a>    <span class="n">decrypted_data</span> <span class="o">=</span> <span class="n">fernet</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">encrypted_data</span><span class="p">)</span>
+</span><span id="decrypt_file-92"><a href="#decrypt_file-92"><span class="linenos">92</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+</span><span id="decrypt_file-93"><a href="#decrypt_file-93"><span class="linenos">93</span></a>        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">decrypted_data</span><span class="p">)</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Decrypts the file at the given file path using the provided key.</p>
+</div>
+
 
                 </section>
                 <section id="load_password">
@@ -405,22 +561,27 @@ crypto    </h1>
 
     </div>
     <a class="headerlink" href="#load_password"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="load_password-59"><a href="#load_password-59"><span class="linenos">59</span></a><span class="k">def</span> <span class="nf">load_password</span><span class="p">():</span>
-</span><span id="load_password-60"><a href="#load_password-60"><span class="linenos">60</span></a>    <span class="n">appdata_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;APPDATA&#39;</span><span class="p">),</span> <span class="n">FOLDER_NAME1</span><span class="p">)</span>
-</span><span id="load_password-61"><a href="#load_password-61"><span class="linenos">61</span></a>    <span class="n">password_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">appdata_folder</span><span class="p">,</span> <span class="n">PASSWORD_FILE</span><span class="p">)</span>
-</span><span id="load_password-62"><a href="#load_password-62"><span class="linenos">62</span></a>    <span class="n">appdata_key_path</span> <span class="o">=</span> <span class="n">get_key_path</span><span class="p">()</span>
-</span><span id="load_password-63"><a href="#load_password-63"><span class="linenos">63</span></a>    
-</span><span id="load_password-64"><a href="#load_password-64"><span class="linenos">64</span></a>    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">password_file_path</span><span class="p">):</span>
-</span><span id="load_password-65"><a href="#load_password-65"><span class="linenos">65</span></a>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">password_file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-</span><span id="load_password-66"><a href="#load_password-66"><span class="linenos">66</span></a>            <span class="n">encrypted_password</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-</span><span id="load_password-67"><a href="#load_password-67"><span class="linenos">67</span></a>            <span class="n">key</span> <span class="o">=</span> <span class="n">load_key</span><span class="p">(</span><span class="n">appdata_key_path</span><span class="p">)</span>
-</span><span id="load_password-68"><a href="#load_password-68"><span class="linenos">68</span></a>            <span class="k">return</span> <span class="n">decrypt_password</span><span class="p">(</span><span class="n">encrypted_password</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-</span><span id="load_password-69"><a href="#load_password-69"><span class="linenos">69</span></a>    <span class="k">else</span><span class="p">:</span>
-</span><span id="load_password-70"><a href="#load_password-70"><span class="linenos">70</span></a>        <span class="k">return</span> <span class="kc">None</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="load_password-97"><a href="#load_password-97"><span class="linenos"> 97</span></a><span class="k">def</span> <span class="nf">load_password</span><span class="p">():</span>
+</span><span id="load_password-98"><a href="#load_password-98"><span class="linenos"> 98</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="load_password-99"><a href="#load_password-99"><span class="linenos"> 99</span></a><span class="sd">    Loads and decrypts the password from the password file.</span>
+</span><span id="load_password-100"><a href="#load_password-100"><span class="linenos">100</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="load_password-101"><a href="#load_password-101"><span class="linenos">101</span></a>    <span class="n">appdata_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;APPDATA&#39;</span><span class="p">),</span> <span class="n">FOLDER_NAME1</span><span class="p">)</span>
+</span><span id="load_password-102"><a href="#load_password-102"><span class="linenos">102</span></a>    <span class="n">password_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">appdata_folder</span><span class="p">,</span> <span class="n">PASSWORD_FILE</span><span class="p">)</span>
+</span><span id="load_password-103"><a href="#load_password-103"><span class="linenos">103</span></a>    <span class="n">appdata_key_path</span> <span class="o">=</span> <span class="n">get_key_path</span><span class="p">()</span>
+</span><span id="load_password-104"><a href="#load_password-104"><span class="linenos">104</span></a>    
+</span><span id="load_password-105"><a href="#load_password-105"><span class="linenos">105</span></a>    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">password_file_path</span><span class="p">):</span>
+</span><span id="load_password-106"><a href="#load_password-106"><span class="linenos">106</span></a>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">password_file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+</span><span id="load_password-107"><a href="#load_password-107"><span class="linenos">107</span></a>            <span class="n">encrypted_password</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</span><span id="load_password-108"><a href="#load_password-108"><span class="linenos">108</span></a>            <span class="n">key</span> <span class="o">=</span> <span class="n">load_key</span><span class="p">(</span><span class="n">appdata_key_path</span><span class="p">)</span>
+</span><span id="load_password-109"><a href="#load_password-109"><span class="linenos">109</span></a>            <span class="k">return</span> <span class="n">decrypt_password</span><span class="p">(</span><span class="n">encrypted_password</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+</span><span id="load_password-110"><a href="#load_password-110"><span class="linenos">110</span></a>    <span class="k">else</span><span class="p">:</span>
+</span><span id="load_password-111"><a href="#load_password-111"><span class="linenos">111</span></a>        <span class="k">return</span> <span class="kc">None</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Loads and decrypts the password from the password file.</p>
+</div>
+
 
                 </section>
                 <section id="save_password">
@@ -434,21 +595,82 @@ crypto    </h1>
 
     </div>
     <a class="headerlink" href="#save_password"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="save_password-72"><a href="#save_password-72"><span class="linenos">72</span></a><span class="k">def</span> <span class="nf">save_password</span><span class="p">(</span><span class="n">password</span><span class="p">):</span>
-</span><span id="save_password-73"><a href="#save_password-73"><span class="linenos">73</span></a>    <span class="n">appdata_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;APPDATA&#39;</span><span class="p">),</span> <span class="n">FOLDER_NAME1</span><span class="p">)</span>
-</span><span id="save_password-74"><a href="#save_password-74"><span class="linenos">74</span></a>    <span class="n">create_folder_if_not_exists</span><span class="p">(</span><span class="n">appdata_folder</span><span class="p">)</span>
-</span><span id="save_password-75"><a href="#save_password-75"><span class="linenos">75</span></a>    
-</span><span id="save_password-76"><a href="#save_password-76"><span class="linenos">76</span></a>    <span class="n">password_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">appdata_folder</span><span class="p">,</span> <span class="n">PASSWORD_FILE</span><span class="p">)</span>
-</span><span id="save_password-77"><a href="#save_password-77"><span class="linenos">77</span></a>    <span class="n">appdata_key_path</span> <span class="o">=</span> <span class="n">get_key_path</span><span class="p">()</span>
-</span><span id="save_password-78"><a href="#save_password-78"><span class="linenos">78</span></a>    
-</span><span id="save_password-79"><a href="#save_password-79"><span class="linenos">79</span></a>    <span class="n">key</span> <span class="o">=</span> <span class="n">load_key</span><span class="p">(</span><span class="n">appdata_key_path</span><span class="p">)</span>
-</span><span id="save_password-80"><a href="#save_password-80"><span class="linenos">80</span></a>    <span class="n">encrypted_password</span> <span class="o">=</span> <span class="n">encrypt_password</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-</span><span id="save_password-81"><a href="#save_password-81"><span class="linenos">81</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">password_file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-</span><span id="save_password-82"><a href="#save_password-82"><span class="linenos">82</span></a>        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">encrypted_password</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="save_password-113"><a href="#save_password-113"><span class="linenos">113</span></a><span class="k">def</span> <span class="nf">save_password</span><span class="p">(</span><span class="n">password</span><span class="p">):</span>
+</span><span id="save_password-114"><a href="#save_password-114"><span class="linenos">114</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="save_password-115"><a href="#save_password-115"><span class="linenos">115</span></a><span class="sd">    Encrypts and saves the password to the password file.</span>
+</span><span id="save_password-116"><a href="#save_password-116"><span class="linenos">116</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="save_password-117"><a href="#save_password-117"><span class="linenos">117</span></a>    <span class="n">appdata_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;APPDATA&#39;</span><span class="p">),</span> <span class="n">FOLDER_NAME1</span><span class="p">)</span>
+</span><span id="save_password-118"><a href="#save_password-118"><span class="linenos">118</span></a>    <span class="n">create_folder_if_not_exists</span><span class="p">(</span><span class="n">appdata_folder</span><span class="p">)</span>
+</span><span id="save_password-119"><a href="#save_password-119"><span class="linenos">119</span></a>    
+</span><span id="save_password-120"><a href="#save_password-120"><span class="linenos">120</span></a>    <span class="n">password_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">appdata_folder</span><span class="p">,</span> <span class="n">PASSWORD_FILE</span><span class="p">)</span>
+</span><span id="save_password-121"><a href="#save_password-121"><span class="linenos">121</span></a>    <span class="n">appdata_key_path</span> <span class="o">=</span> <span class="n">get_key_path</span><span class="p">()</span>
+</span><span id="save_password-122"><a href="#save_password-122"><span class="linenos">122</span></a>    
+</span><span id="save_password-123"><a href="#save_password-123"><span class="linenos">123</span></a>    <span class="n">key</span> <span class="o">=</span> <span class="n">load_key</span><span class="p">(</span><span class="n">appdata_key_path</span><span class="p">)</span>
+</span><span id="save_password-124"><a href="#save_password-124"><span class="linenos">124</span></a>    <span class="n">encrypted_password</span> <span class="o">=</span> <span class="n">encrypt_password</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+</span><span id="save_password-125"><a href="#save_password-125"><span class="linenos">125</span></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">password_file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+</span><span id="save_password-126"><a href="#save_password-126"><span class="linenos">126</span></a>        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">encrypted_password</span><span class="p">)</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Encrypts and saves the password to the password file.</p>
+</div>
+
+
+                </section>
+                <section id="encrypt_dax_file">
+                            <input id="encrypt_dax_file-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">encrypt_dax_file</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">file_path</span>, </span><span class="param"><span class="n">key</span><span class="o">=</span><span class="kc">None</span></span><span class="return-annotation">):</span></span>
+
+                <label class="view-source-button" for="encrypt_dax_file-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#encrypt_dax_file"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="encrypt_dax_file-130"><a href="#encrypt_dax_file-130"><span class="linenos">130</span></a><span class="k">def</span> <span class="nf">encrypt_dax_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span id="encrypt_dax_file-131"><a href="#encrypt_dax_file-131"><span class="linenos">131</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="encrypt_dax_file-132"><a href="#encrypt_dax_file-132"><span class="linenos">132</span></a><span class="sd">    Encrypts the specified file using &#39;key1.key&#39;. If the key is not provided,</span>
+</span><span id="encrypt_dax_file-133"><a href="#encrypt_dax_file-133"><span class="linenos">133</span></a><span class="sd">    it loads the key from &#39;key1.key&#39;.</span>
+</span><span id="encrypt_dax_file-134"><a href="#encrypt_dax_file-134"><span class="linenos">134</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="encrypt_dax_file-135"><a href="#encrypt_dax_file-135"><span class="linenos">135</span></a>    <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="encrypt_dax_file-136"><a href="#encrypt_dax_file-136"><span class="linenos">136</span></a>        <span class="n">key</span> <span class="o">=</span> <span class="n">load_key</span><span class="p">(</span><span class="n">get_key1_path</span><span class="p">())</span>
+</span><span id="encrypt_dax_file-137"><a href="#encrypt_dax_file-137"><span class="linenos">137</span></a>    <span class="n">encrypt_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Encrypts the specified file using 'key1.key'. If the key is not provided,
+it loads the key from 'key1.key'.</p>
+</div>
+
+
+                </section>
+                <section id="decrypt_dax_file">
+                            <input id="decrypt_dax_file-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">decrypt_dax_file</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">file_path</span>, </span><span class="param"><span class="n">key</span><span class="o">=</span><span class="kc">None</span></span><span class="return-annotation">):</span></span>
+
+                <label class="view-source-button" for="decrypt_dax_file-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#decrypt_dax_file"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="decrypt_dax_file-139"><a href="#decrypt_dax_file-139"><span class="linenos">139</span></a><span class="k">def</span> <span class="nf">decrypt_dax_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span id="decrypt_dax_file-140"><a href="#decrypt_dax_file-140"><span class="linenos">140</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="decrypt_dax_file-141"><a href="#decrypt_dax_file-141"><span class="linenos">141</span></a><span class="sd">    Decrypts the specified file using &#39;key1.key&#39;. If the key is not provided,</span>
+</span><span id="decrypt_dax_file-142"><a href="#decrypt_dax_file-142"><span class="linenos">142</span></a><span class="sd">    it loads the key from &#39;key1.key&#39;.</span>
+</span><span id="decrypt_dax_file-143"><a href="#decrypt_dax_file-143"><span class="linenos">143</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="decrypt_dax_file-144"><a href="#decrypt_dax_file-144"><span class="linenos">144</span></a>    <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="decrypt_dax_file-145"><a href="#decrypt_dax_file-145"><span class="linenos">145</span></a>        <span class="n">key</span> <span class="o">=</span> <span class="n">load_key</span><span class="p">(</span><span class="n">get_key1_path</span><span class="p">())</span>
+</span><span id="decrypt_dax_file-146"><a href="#decrypt_dax_file-146"><span class="linenos">146</span></a>    <span class="n">decrypt_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Decrypts the specified file using 'key1.key'. If the key is not provided,
+it loads the key from 'key1.key'.</p>
+</div>
+
 
                 </section>
     </main>

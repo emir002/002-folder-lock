@@ -1,7 +1,7 @@
-# 002 Folder Lock
+# 002 Folder Lock version 0.2
 
 ## Summary
-002 Folder lock is a tool for simply locking folders in the Windows system with a password. Locked folders cannot be accessed from Windows, they cannot be deleted or copied. You can download the compiled version of the tool ready for installation [HERE](link goes here).
+002 Folder lock is a tool for simply locking folders in the Windows system with a password. Locked folders cannot be accessed from Windows, they cannot be deleted or copied. You can download the compiled version of the tool ready for installation [HERE](https://e.pcloud.link/publink/show?code=tsJy6alK).
 002 Folder Lock works by modifying windows security descriptors at the folder level. You can read about them here: [windows security descriptors.](https://learn.microsoft.com/en-us/windows/win32/secauthz/security-descriptors)
 **Note:** Never store important passwords or credit card numbers in a locked folder! 002 Folder Lock prohibits access to the folder from the windows platform only. The files in the locked folder are encrypted using using the Fernet symmetric encryption provided by the cryptography library in Python. While Fernet provides strong encryption, the security of the encrypted data also heavily depends on the security of the key. If the key is compromised, the encryption can be easily broken. The program is designed for simplicity and speed of use, not for ultimate security. If you want security as much as Windows can provide save your key to USB drive or another location physically separated from the computer.
 
@@ -13,6 +13,8 @@ At the top on the left is the "Options" menu. It has the following functions: -C
 
 ## False positive  
 Some antivirus software (such as Avira - tested) falsely report the program after installation as positive for Trojans / ransomware due to encryption modules and block the program from starting. If this happens restore program from antivirus quarantine, add it to the whitelist of the antivirus program and continue using it normally. For your own safety, you can upload the program to one of the online programs for checking the presence of viruses, such as: https://www.eset.com/int/home/online-scanner/ or https://opentip.kaspersky.com
+
+The program is signed with a self-sign certificate that is available in the download folder. To avoid a warning from the antivirus software, it is recommended that you first download the certificate and install it (password is 0000) and only then install the program, so that the antivirus software would be sure that the program has not been changed from the moment of signing to the moment of installation on the computer.
 
 ##Speed  
 When unlocking or locking a folder, if there are a large number of files or these files take up a lot of space measured in gigabytes, it is normal for the program to become unresponsive until it finishes all encryption/decryption operations. This may take some time and depends on the size of the folder as well as the speed of your SSD/HDD disk and processor. It is recommended that the program is not interrupted until it is finished. Give it some time.

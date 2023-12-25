@@ -1,4 +1,4 @@
-# 002 Folder Lock  
+# 002 Folder Lock version 0.2
 
 ## Summary
 002 Folder lock is a tool for simply locking folders in the Windows system with a password. Locked folders cannot be accessed from Windows, they cannot be deleted or copied. You can download the compiled version of the tool ready for installation [HERE](link goes here).
@@ -9,7 +9,9 @@
 File cmd_lock_app represents the main logic of the program as well as the user interface. When starting the program for the first time, it checks whether there is an encryption key in '%APPDATA%\002 Folder Lock', and if the encryption key is not present, it will generate a new key and ask to set a new password. The encrypted password is in the password.json file located in the current folder. If the password.json file does not exist or if the encrypted code has been changed, the program will be locked permanently and will inform the user to restore the original password.json file. The user has the right to enter the wrong code 5 times before the program is locked. The number of attempts to enter correct password is saved into a 'file' located in the folder '%APPDATA%\002 Folder Lock'  
 
 ## False positive  
-Some antivirus software (such as Avira - tested) falsely report the program after installation as positive for Trojans / ransomware due to encryption modules and block the program from starting. If this happens restore program from antivirus quarantine, add it to the whitelist of the antivirus program and continue using it normally. For your own safety, you can upload the program to one of the online programs for checking the presence of viruses, such as: https://www.eset.com/int/home/online-scanner/ or https://opentip.kaspersky.com
+Some antivirus software (such as Avira - tested) falsely report the program after installation as positive for Trojans / ransomware due to encryption modules and block the program from starting. If this happens restore program from antivirus quarantine, add it to the whitelist of the antivirus program and continue using it normally. For your own safety, you can upload the program to one of the online programs for checking the presence of viruses, such as: https://www.eset.com/int/home/online-scanner/ or https://opentip.kaspersky.com  
+
+The program is signed with a self-sign certificate that is available in the download folder. To avoid a warning from the antivirus software, it is recommended that you first download the certificate and install it (password is 0000) and only then install the program, so that the antivirus software would be sure that the program has not been changed from the moment of signing to the moment of installation on the computer.
 
 ## Speed
 The speed of encryption/decryption depends on the speed of your processor and SSD/HDD disk. For larger files and a larger number of files, use the command line version because it is faster than the GUI version.  
@@ -44,6 +46,7 @@ A detailed view of classes and functions is available in the files in 'docs' fol
 \'%APPDATA%'
 |- \002 Folder Lock\attempts'	File that store number of wrong password imputs. It will be created after running the program.  
 |- \002 Folder Lock\key.key'	File that store key for encrypting password. It will be created after running the program.  
+|- \002 Folder Lock\key1.key'	File that store key for encrypting trial start date. It will be created after running the program.  
 |- \Vlc1\pas1.json'	Encrypted password file.  
 
 \'002 Folder Lock'  
@@ -57,6 +60,7 @@ A detailed view of classes and functions is available in the files in 'docs' fol
 |
 |- 'cmd_lock_app.py'	Main logic of tool and command line user interface  
 |- 'crypto.py'		Module that load/save, encrypt/decrypt password. This module save data to 'password.json'.  
+|- 'dax.txt'		File that save trial start date.  
 |- 'dependencies.txt'	List of dependencies  
 |- 'eye.png	'	icon in gui app  
 |- 'folder_path.py'	Module that save/load locked folder path. This module save data to 'path.json'.  
@@ -84,6 +88,70 @@ Monero : 49D8Vbe2cpsiWxHhgjfExz2NECvdoaZhoJS33gaiUbPhY2PJZQuQfsbhR7pyGsxaEP4UkPh
 Ethereum : 0x33234686d42eb8b2f96f75f061bc01a302515014  
 Ethereum Classic : 0x33234686d42eb8b2f96f75f061bc01a302515014  
 Avalanche AVAX : 0xEEcc1d4c922b66C174600455290ddfAA9f07c73F  
+
+## Trial
+The program contains a basic, easy to bypass trial component. After the trial period of 30 days, the program will be locked and it will be possible to unlock it by entering the appropriate code in the trial window that is launched when the program is started. You can extend the trial period: a) by changing the Windows built-in time to an earlier date, b) by deleting the 'dax.exe' file from the directory where the application is installed, which gives you a new 30-day trial period, c) by changing the code in the 'startwindows.py' file. Code:  
+
+'''python
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+
+    trial_manager = TrialManager()
+    remaining_days = trial_manager.read_or_start_trial()
+    check_trial = trial_manager.check_trial()
+
+    folder_lock_manager = FolderLockManager()
+    first_setup = folder_lock_manager.check_initial_setup()
+
+    if first_setup != "setup_required" and check_trial == False:
+        # If trial period is active and it's not the first setup, open TrialApp
+        window = TrialApp()
+    elif first_setup == "setup_required" and check_trial == False:
+        # Directly open the FirstTimeWindow for first-time setup
+        window = FirstTimeWindow()
+    elif first_setup != "setup_required" and check_trial == True:
+        # Directly open the Pass window if trial has ended
+        window = EnterPassWindow()
+    elif first_setup == "password_file_error":
+        # Handle password file error
+        QMessageBox.critical(None, "Warning", "Something is wrong with the password file. App will now quit.")
+        sys.exit(0)
+    else:
+        # Proceed with opening the EnterPassWindow
+        window = TrialApp()
+
+    window.show()
+    sys.exit(app.exec())
+'''
+
+change to this:  
+
+'''python
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+
+    folder_lock_manager = FolderLockManager()
+    first_setup = folder_lock_manager.check_initial_setup()
+
+    if first_setup == "setup_required":
+        # Directly open the FirstTimeWindow for first-time setup
+        window = FirstTimeWindow()
+    elif first_setup != "setup_required":
+        # Directly open the Pass window
+        window = EnterPassWindow()
+    elif first_setup == "password_file_error":
+        # Handle password file error
+        QMessageBox.critical(None, "Warning", "Something is wrong with the password file. App will now quit.")
+        sys.exit(0)
+    else:
+        # Proceed with opening the EnterPassWindow
+        window = EnterPassWindow()
+
+    window.show()
+    sys.exit(app.exec())
+'''
+
+to disable trial.
 
 ## Licence
 

@@ -1,6 +1,8 @@
 import sys
 import os
+import datetime
 import subprocess
+import crypto
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
                              QLabel, QLineEdit, QPushButton, QMenuBar, QFileDialog, QColorDialog,
                              QToolButton, QMessageBox, QSpacerItem, QSizePolicy)
@@ -8,11 +10,134 @@ from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QIcon, QFont, QColor, QAction
 from gui_lock_app import FolderLockManager
 from main_lock import AccessControl
-from crypto import load_password
+from crypto import load_password, encrypt_dax_file, decrypt_dax_file
 
 current_folder = os.getcwd()
 file_name = 'GUI readme.md'
 help_file_path = os.path.join(current_folder, file_name)
+
+import os
+import datetime
+
+class TrialManager:
+    def __init__(self, trial_length_days=30, trial_file='dax.txt'):
+        self.trial_length_days = trial_length_days
+        self.trial_file = trial_file
+
+    def read_or_start_trial(self):
+        if not os.path.exists(self.trial_file):
+            with open(self.trial_file, 'w') as file:
+                file.write(datetime.datetime.now().isoformat())
+            crypto.encrypt_dax_file(self.trial_file)
+            return self.trial_length_days
+
+        crypto.decrypt_dax_file(self.trial_file)
+        with open(self.trial_file, 'r') as file:
+            file_content = file.read().strip()
+            crypto.encrypt_dax_file(self.trial_file)  # Re-encrypt after reading
+
+            if file_content == 'TRIAL_ENDED':
+                return 0
+
+            start_date = datetime.datetime.fromisoformat(file_content)
+            remaining = self.trial_length_days - (datetime.datetime.now() - start_date).days
+
+            return max(0, remaining)
+
+    def end_trial(self):
+        with open(self.trial_file, 'w') as file:
+            file.write('TRIAL_ENDED')
+        crypto.encrypt_dax_file(self.trial_file)
+
+    def check_trial(self):
+        crypto.decrypt_dax_file(self.trial_file)
+        with open(self.trial_file, 'r') as file:
+            trial_data = file.read().strip()
+            crypto.encrypt_dax_file(self.trial_file)
+        return trial_data == 'TRIAL_ENDED'
+        
+class TrialApp(QMainWindow):
+    def __init__(self):
+        self.enter_pass_window = None
+        super().__init__()
+        self.trial_manager = TrialManager()
+        self.initUI()
+        self.setWindowIcon(QIcon('icon-5355895_1280.ico'))
+
+
+    def initUI(self):
+        self.setWindowTitle('Trial Period')
+        self.setGeometry(100, 100, 400, 300)
+        self.setFixedSize(600, 150)
+
+        central_widget = QWidget(self)
+        self.setCentralWidget(central_widget)
+
+        layout = QVBoxLayout(central_widget)
+
+        # Trial period label
+        remaining_days = self.trial_manager.read_or_start_trial()
+        trial_label = QLabel(f'Your trial period is active. You have {remaining_days} days left. Click Continue or enter code and click Check Code.' if remaining_days > 0 else 'Your trial period has expired.', self)
+        layout.addWidget(trial_label)
+
+        # Coffee section
+        coffee_layout = QHBoxLayout()
+        coffee_label = QLabel("If you buy me a coffee and sent me mail to " '<a href="mailto:emir002@yahoo.com" style="color: blue; text-decoration: underline;">emir002@yahoo.com</a>' " I will remove trial for you!", self)
+        coffee_button = QPushButton("Coffee", self)
+        coffee_button.clicked.connect(self.openCoffeeWindow)
+        coffee_layout.addWidget(coffee_label)
+        coffee_layout.addStretch(1)
+        coffee_layout.addWidget(coffee_button)
+        layout.addLayout(coffee_layout)
+        
+        # Code entry section
+        code_layout = QHBoxLayout()
+        self.code_entry = QLineEdit(self)
+        self.code_entry.setPlaceholderText("Enter code to end trial")
+        check_code_button = QPushButton("Check Code", self)
+        check_code_button.clicked.connect(self.checkCode)
+        code_layout.addWidget(self.code_entry)
+        code_layout.addWidget(check_code_button)
+        layout.addLayout(code_layout)
+
+        # Continue and Quit buttons
+        control_layout = QHBoxLayout()
+        continue_button = QPushButton("Continue", self)
+        continue_button.clicked.connect(self.continueApp)
+        if remaining_days <= 0:
+            continue_button.setEnabled(False)
+        quit_button = QPushButton("Quit", self)
+        quit_button.clicked.connect(self.quitApp)
+        control_layout.addWidget(continue_button)
+        control_layout.addStretch(1)
+        control_layout.addWidget(quit_button)
+        layout.addLayout(control_layout)
+        
+
+    def openCoffeeWindow(self):
+        self.coffee_window = Coffee()
+        self.coffee_window.show()
+
+    def checkCode(self):
+        entered_code = self.code_entry.text()
+        if self.is_valid_code(entered_code):
+            QMessageBox.information(self, 'Code Validated', 'You have entered the correct code to end the trial period. The application is fully unlocked. Thank you.', QMessageBox.StandardButton.Ok)
+            self.trial_manager.end_trial()  # End the trial
+            self.close()  # Close the TrialApp window
+            self.continueApp()
+        else:
+            QMessageBox.warning(self, 'Invalid Code', 'The code you entered is invalid.', QMessageBox.StandardButton.Ok)
+
+    def is_valid_code(self, code):
+        return code.startswith("TRIAL") and code[5:].isdigit() and len(code) == 9
+
+    def continueApp(self):
+        self.hide()  # Hide the TrialApp window instead of closing
+        self.enter_pass_window = EnterPassWindow()  # Use attribute instead of local variable
+        self.enter_pass_window.show()
+
+    def quitApp(self):
+        QApplication.closeAllWindows()
 
 class EnterPassWindow(QMainWindow):
     def __init__(self):
@@ -582,12 +707,18 @@ class About(QMainWindow):
 
         self.setWindowTitle("About")
         self.setGeometry(100, 100, 300, 200)
-        self.setFixedSize(300, 150)
+        self.setFixedSize(300, 200)
         self.setWindowIcon(QIcon('icon-5355895_1280.ico'))
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout()
+        
+        # Version label
+        version_label = QLabel()
+        version_label.setText('Version 0.2')
+        version_label.setOpenExternalLinks(True)  # Opens the link in the default mail client
+        layout.addWidget(version_label)
         
         layout.addWidget(QLabel("You can reach me via mail :"))
 
@@ -604,6 +735,11 @@ class About(QMainWindow):
         github_label.setText('<a href="https://github.com/emir002" style="color: blue; text-decoration: underline;">https://github.com/emir002</a>')
         github_label.setOpenExternalLinks(True)  # Opens the link in the default web browser
         layout.addWidget(github_label)
+        
+        name_label = QLabel()
+        name_label.setText('©Emir Hasanica 2023')
+        layout.addWidget(name_label)
+
 
         ok_layout = QHBoxLayout()
         spacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
@@ -620,19 +756,29 @@ class About(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
+    trial_manager = TrialManager()
+    remaining_days = trial_manager.read_or_start_trial()
+    check_trial = trial_manager.check_trial()
+
     folder_lock_manager = FolderLockManager()
     first_setup = folder_lock_manager.check_initial_setup()
 
-    if first_setup == "setup_required":
+    if first_setup != "setup_required" and check_trial == False:
+        # If trial period is active and it's not the first setup, open TrialApp
+        window = TrialApp()
+    elif first_setup == "setup_required" and check_trial == False:
         # Directly open the FirstTimeWindow for first-time setup
         window = FirstTimeWindow()
-        
+    elif first_setup != "setup_required" and check_trial == True:
+        # Directly open the Pass window if trial has ended
+        window = EnterPassWindow()
     elif first_setup == "password_file_error":
+        # Handle password file error
         QMessageBox.critical(None, "Warning", "Something is wrong with the password file. App will now quit.")
-        sys.exit(0)  # Quit the application
+        sys.exit(0)
     else:
         # Proceed with opening the EnterPassWindow
-        window = EnterPassWindow()
+        window = TrialApp()
 
     window.show()
     sys.exit(app.exec())
