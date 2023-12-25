@@ -93,6 +93,7 @@ Avalanche AVAX : 0xEEcc1d4c922b66C174600455290ddfAA9f07c73F
 The program contains a basic, easy to bypass trial component. After the trial period of 30 days, the program will be locked and it will be possible to unlock it by entering the appropriate code in the trial window that is launched when the program is started. You can extend the trial period: a) by changing the Windows built-in time to an earlier date, b) by deleting the 'dax.exe' file from the directory where the application is installed, which gives you a new 30-day trial period, c) by changing the code in the 'startwindows.py' file. Code:  
 
 '''python  
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
@@ -126,7 +127,8 @@ if __name__ == "__main__":
 
 change to this:  
 
-'''python  
+'''python 
+ 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
